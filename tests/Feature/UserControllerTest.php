@@ -37,4 +37,51 @@ class UserControllerTest extends TestCase
             'email' => 'teste@teste.com',
         ]);
     }
+
+    public function test_login_user()
+    {
+        $user = User::create([
+            'name' => 'Usuário de teste',
+            'email' => 'teste@teste.com',
+            'password' => Hash::make('password'),
+        ]);
+
+        $data = [
+            'email' => 'teste@teste.com',
+            'password' => 'password',
+        ];
+
+        $response = $this->postJson('/api/v1/users/login', $data);
+
+        $response->assertStatus(200)
+        ->assertJsonStructure([
+            'user',
+            'authorization' => [
+                'token',
+                'type',
+                'expires_in',
+            ],
+        ]);
+    }
+
+    public function test_login_user_with_invalid_credentials()
+    {
+        $user = User::create([
+            'name' => 'Usuário de teste',
+            'email' => 'teste@teste.com',
+            'password' => Hash::make('password'),
+        ]);
+
+        $data = [
+            'email' => 'teste@teste.com',
+            'password' => 'wrongpassword',
+        ];
+
+        $response = $this->postJson('/api/v1/users/login', $data);
+
+        $response->assertStatus(401)
+        ->assertJson([
+            'message' => 'Unauthorized',
+        ]);
+    }
 }
