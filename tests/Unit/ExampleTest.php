@@ -3,9 +3,11 @@
 namespace Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use Tests\CreatesApplication;
 
 class ExampleTest extends TestCase
 {
+    use CreatesApplication;
     /**
      * A basic test example.
      */
