@@ -40,7 +40,7 @@ class UserControllerTest extends TestCase
 
     public function test_login_user()
     {
-        $user = User::create([
+        User::create([
             'name' => 'Usuário de teste',
             'email' => 'teste@teste.com',
             'password' => Hash::make('password'),
@@ -61,27 +61,6 @@ class UserControllerTest extends TestCase
                 'type',
                 'expires_in',
             ],
-        ]);
-    }
-
-    public function test_login_user_with_invalid_credentials()
-    {
-        $user = User::create([
-            'name' => 'Usuário de teste',
-            'email' => 'teste@teste.com',
-            'password' => Hash::make('password'),
-        ]);
-
-        $data = [
-            'email' => 'teste@teste.com',
-            'password' => 'wrongpassword',
-        ];
-
-        $response = $this->postJson('/api/v1/user/login', $data);
-
-        $response->assertStatus(401)
-        ->assertJson([
-            'message' => 'Unauthorized',
         ]);
     }
 
@@ -111,10 +90,43 @@ class UserControllerTest extends TestCase
                 'name' => 'Name example',
                 'email' => 'example@example.com',
             ],
+        ]);
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'name' => 'Name example',
+            'email' => 'example@example.com'
+        ]);
+    }
+
+    public function test_get_user_data()
+    {
+        $user = User::create([
+            'name' => 'Name example',
+            'email' => 'example@example.com',
+            'password' => Hash::make('password'),
+        ]);
+        
+        $token = $this->postJson('/api/v1/user/login', [
+            "email" => $user->email,
+            "password" => "password"
+        ]);
+
+        $response = $this->withHeader("Authorization", 'Bearer ' . $token["Authorization"]["token"])
+        ->json('GET', "/api/v1/user/myData")
+        ->assertOk();
+
+        $response->assertStatus(200)
+        ->assertJson([
+            'data' => [
+                'id' => $user->id,
+                'name' => 'Name example',
+                'email' => 'example@example.com',
+            ],
         ])
         ->assertJsonStructure([
-            'user' => [
-                'addresses'
+            "data" => [
+                "addresses"
             ]
         ]);
 
@@ -122,6 +134,27 @@ class UserControllerTest extends TestCase
             'id' => $user->id,
             'name' => 'Name example',
             'email' => 'example@example.com'
+        ]);
+    }   
+
+    public function test_login_user_with_invalid_credentials()
+    {
+        $user = User::create([
+            'name' => 'Usuário de teste',
+            'email' => 'teste@teste.com',
+            'password' => Hash::make('password'),
+        ]);
+
+        $data = [
+            'email' => 'teste@teste.com',
+            'password' => 'wrongpassword',
+        ];
+
+        $response = $this->postJson('/api/v1/user/login', $data);
+
+        $response->assertStatus(401)
+        ->assertJson([
+            'message' => 'Unauthorized',
         ]);
     }
 

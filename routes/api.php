@@ -9,4 +9,5 @@ Route::prefix('v1')->group(function () {
     Route::post('/user/login', [UserController::class, 'login'])->name('login');
     
     Route::put('/user/{id}', [UserController::class, 'update']);
+    Route::get('/user/myData', [UserController::class, 'getUserInfo']);
 });

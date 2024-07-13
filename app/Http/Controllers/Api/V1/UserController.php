@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function __construct() {
+    public function __construct() 
+    {
         $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
@@ -73,11 +74,27 @@ class UserController extends Controller
             ], 422);
         }
 
-        $updatedUser = User::with(['addresses'])->findOrFail($id);
+        $updatedUser = User::findOrFail($id);
         
         return response()->json([
             'message' => 'Usuário editado com sucesso!',
             'user' => $updatedUser
+        ], 200);
+    }
+
+    public function getUserInfo()
+    {
+        $user = Auth::user();
+        $user->addresses = $user->addresses;
+
+        if (!$user) {
+            return response()->json([
+                'errors' => "Erro ao encontrar o usuário!",
+            ], 422);
+        }
+
+        return response()->json([
+            'data' => $user
         ], 200);
     }
 
