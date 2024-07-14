@@ -19,9 +19,9 @@ return new class extends Migration
             $table->string('neighborhood');
             $table->string('additional')->nullable();
             $table->string('city');
-            $table->string('state');
-            $table->string('country');
-            $table->string('postal_code');
+            $table->char('state', 2);
+            $table->string('country', 50);
+            $table->string('postal_code', 50);
             $table->timestamps();
         });
     }

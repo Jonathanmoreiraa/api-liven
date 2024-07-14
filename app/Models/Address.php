@@ -13,6 +13,10 @@ class Address extends Model
         'user_id', 'street', 'number', 'neighborhood', 'additional', 'city', 'state', 'country', 'postal_code'
     ];
 
+    protected $hidden = [
+        'user_id',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
