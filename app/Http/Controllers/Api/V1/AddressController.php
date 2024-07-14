@@ -46,8 +46,7 @@ class AddressController extends Controller
 
         } catch (\Throwable $th) {
             return response()->json([
-                'errors' => "Erro ao criar o endereço!",
-                "message" => $th
+                'errors' => "Erro ao criar o endereço!"
             ], 422);
         }
 
@@ -55,5 +54,83 @@ class AddressController extends Controller
             'message' => 'Endereço criado com sucesso!',
             'address' => $address
         ], 201);
+    }
+
+    public function getAdresseses(Request $request){
+        $addressesQuery = Address::query();
+        $user = Auth::user();
+
+        $addressesQuery->where("user_id", '=', $user->id);
+
+        if ($request->filled('street')) {
+            $addressesQuery->where('street', 'like', '%'.$request->input('street').'%');
+        }
+
+        if ($request->filled('number')) {
+            $addressesQuery->where('number', 'like', '%'.$request->input('number').'%');
+        }
+
+        if ($request->filled('neighborhood')) {
+            $addressesQuery->where('neighborhood', 'like', '%'.$request->input('neighborhood').'%');
+        }
+
+        if ($request->filled('additional')) {
+            $addressesQuery->where('additional', 'like', '%'.$request->input('additional').'%');
+        }
+
+        if ($request->filled('city')) {
+            $addressesQuery->where('city', 'like', '%'.$request->input('city').'%');
+        }
+
+        if ($request->filled('state')) {
+            $addressesQuery->where('state', 'like', '%'.$request->input('state').'%');
+        }
+
+        if ($request->filled('country')) {
+            $addressesQuery->where('country', 'like', '%'.$request->input('country').'%');
+        }
+
+        if ($request->filled('postal_code')) {
+            $formattedPostalCode = $request->input('postal_code');
+
+            if (strlen($request->postal_code) == 8) {
+                $formattedPostalCode = substr($request->postal_code, 0, 5) . '-' . substr($request->postal_code, 5);
+            }
+
+            $addressesQuery->where('postal_code', 'like', '%'.$formattedPostalCode.'%');
+        }
+
+        $addresses = $addressesQuery->get();
+
+        if (!$addresses) {
+            return response()->json([
+                'errors' => "Erro ao retornar os endereços!"
+            ], 422);
+        }else if ($addresses && count($addresses) == 0) {
+            return response()->json([
+                'errors' => "Nenhum endereço encontrado!"
+            ], 422);
+        }
+        return response()->json([
+            'data' => $addresses
+        ], 200);
+    }
+
+    public function getAdressById(string $id){
+        $user = Auth::user();
+
+        $address = Address::where([
+            "user_id" => $user->id
+        ])->find($id);
+
+        if (!$address) {
+            return response()->json([
+                'errors' => "Nenhum endereço encontrado com este id!"
+            ], 422);
+        }
+
+        return response()->json([
+            'data' => $address
+        ], 200);
     }
 }

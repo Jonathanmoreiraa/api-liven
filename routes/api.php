@@ -14,4 +14,6 @@ Route::prefix('v1')->group(function () {
     Route::delete('/user/{id}', [UserController::class, 'delete']);
 
     Route::post('/user/address', [AddressController::class, 'add']);
+    Route::get('/user/address', [AddressController::class, 'getAdresseses']);
+    Route::get('/user/address/{id}', [AddressController::class, 'getAdressById']);
 });
