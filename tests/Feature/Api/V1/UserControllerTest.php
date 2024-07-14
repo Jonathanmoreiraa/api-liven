@@ -14,7 +14,7 @@ class UserControllerTest extends TestCase
 {
     use CreatesApplication, DatabaseTransactions;
 
-    public function test_register_user()
+    public function test_register_user_successfully()
     {
         $data = [
             'name' => 'Usuário de teste',
@@ -38,7 +38,7 @@ class UserControllerTest extends TestCase
         ]);
     }
 
-    public function test_login_user()
+    public function test_login_user_successfully()
     {
         User::create([
             'name' => 'Usuário de teste',
@@ -99,7 +99,7 @@ class UserControllerTest extends TestCase
         ]);
     }
 
-    public function test_get_user_data()
+    public function test_get_user_data_successfully()
     {
         $user = User::create([
             'name' => 'Name example',
@@ -113,7 +113,7 @@ class UserControllerTest extends TestCase
         ]);
 
         $response = $this->withHeader("Authorization", 'Bearer ' . $token["Authorization"]["token"])
-        ->json('GET', "/api/v1/user/myData")
+        ->json('GET', "/api/v1/user/me")
         ->assertOk();
 
         $response->assertStatus(200)
@@ -135,6 +135,56 @@ class UserControllerTest extends TestCase
             'name' => 'Name example',
             'email' => 'example@example.com'
         ]);
+    } 
+    
+    public function test_logout_user_successfully()
+    {
+        $user = User::create([
+            'name' => 'Name example',
+            'email' => 'example@example.com',
+            'password' => Hash::make('password'),
+        ]);
+        
+        $token = $this->postJson('/api/v1/user/login', [
+            "email" => $user->email,
+            "password" => "password"
+        ]);
+
+        $response = $this->withHeader("Authorization", 'Bearer ' . $token["Authorization"]["token"])
+        ->json('POST', "/api/v1/user/logout")
+        ->assertOk();
+
+        $response->assertStatus(200)
+        ->assertJson([
+            'message' => 'Usuário deslogado com sucesso!'
+        ]);
+    }
+
+    public function test_delete_user_successfully()
+    {
+        $user = User::create([
+            'name' => 'Name example',
+            'email' => 'example@example.com',
+            'password' => Hash::make('password'),
+        ]);
+        
+        $token = $this->postJson('/api/v1/user/login', [
+            "email" => $user->email,
+            "password" => "password"
+        ]);
+
+        $response = $this->withHeader("Authorization", 'Bearer ' . $token["Authorization"]["token"])
+        ->json('DELETE', "/api/v1/user/$user->id")
+        ->assertOk();
+
+        $response->assertStatus(200)
+        ->assertJson([
+            'data' => "Usuário deletado com sucesso!",
+        ]);
+
+        $this->assertDatabaseMissing('users', [
+            'id' => $user->id
+        ]);
     }   
 
     public function test_login_user_with_invalid_credentials()
@@ -152,9 +202,9 @@ class UserControllerTest extends TestCase
 
         $response = $this->postJson('/api/v1/user/login', $data);
 
-        $response->assertStatus(401)
+        $response->assertStatus(422)
         ->assertJson([
-            'message' => 'Unauthorized',
+            'message' => 'Erro ao realizar o login!',
         ]);
     }
 
@@ -178,6 +228,40 @@ class UserControllerTest extends TestCase
         $response->assertStatus(422)
         ->assertJsonStructure([
             'errors',
+        ]);
+    }
+
+    public function test_delete_user_failure()
+    {
+        $user = User::factory()->create();
+    
+        $token = $this->postJson('/api/v1/user/login', [
+            "email" => $user->email,
+            "password" => "password"
+        ]);
+        
+        $response = $this->withHeader("Authorization", 'Bearer ' . $token["Authorization"]["token"])
+        ->json('DELETE', "/api/v1/user/0");
+
+        $response->assertStatus(422);
+        $response->assertJson([
+            'errors' => "Erro ao deletar o usuário!"
+        ]);
+    }
+
+    public function test_logout_user_without_token()
+    {
+        $user = User::create([
+            'name' => 'Usuário de teste',
+            'email' => 'teste@teste.com',
+            'password' => Hash::make('password'),
+        ]);
+
+        $response = $this->json('POST', "/api/v1/user/logout");
+
+        $response->assertStatus(401)
+        ->assertJson([
+            'errors' => 'Token inválido ou ausente',
         ]);
     }
 }

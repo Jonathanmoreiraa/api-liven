@@ -44,12 +44,12 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->renderable(function (UnauthorizedHttpException $e, $request) {
-            return response()->json(['error' => 'Token inválido ou ausente'], 401);
+            return response()->json(['errors' => 'Token inválido ou ausente'], 401);
         });
     }
 
     protected function unauthenticated($request, AuthenticationException $exception)
     {
-        return response()->json(['error' => 'Token inválido ou ausente'], 401);
+        return response()->json(['errors' => 'Token inválido ou ausente'], 401);
     }
 }

@@ -10,7 +10,7 @@ class Authenticate extends Middleware
     protected function redirectTo(Request $request)
     {
         if (!$request->expectsJson() && !$request->hasHeader('Authorization')) {
-            return response()->json(['error' => 'Token inválido ou ausente'], 401);
+            return response()->json(['errors' => 'Token inválido ou ausente'], 401);
         }
 
         return null;

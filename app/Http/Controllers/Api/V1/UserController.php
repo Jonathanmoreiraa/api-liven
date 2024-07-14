@@ -44,8 +44,8 @@ class UserController extends Controller
 
         if (!$token) {
             return response()->json([
-                'message' => 'Unauthorized',
-            ], 401);
+                'message' => 'Erro ao realizar o login!',
+            ], 422);
         }
 
         $user = Auth::guard('api')->user();
@@ -62,7 +62,6 @@ class UserController extends Controller
 
     public function update(UpdateUserRequest $request, string $id)
     {
-
         try {
             $requestUpdate = $request->only(["name", "email"]);
             $userUpdated = User::where([
@@ -95,6 +94,30 @@ class UserController extends Controller
 
         return response()->json([
             'data' => $user
+        ], 200);
+    }
+
+    public function delete(string $id){
+        try {
+            $userFind = User::findOrFail($id);
+            
+            $user = User::destroy($id);
+            
+            return response()->json([
+                'data' => "Usuário deletado com sucesso!"
+            ], 200);
+            
+        } catch (\Throwable $th) {
+            return response()->json([
+                'errors' => "Erro ao deletar o usuário!",
+            ], 422);
+        }
+    }
+
+    public function logout(){
+        Auth::guard('api')->logout();
+        return response()->json([
+            'message' => 'Usuário deslogado com sucesso!',
         ], 200);
     }
 
