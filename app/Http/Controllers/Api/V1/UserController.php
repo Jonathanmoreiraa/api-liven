@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
 {
@@ -55,7 +56,7 @@ class UserController extends Controller
             'Authorization' => [
                 'token' => $token,
                 'type' => 'Bearer',
-                'expires_in' => config('jwt.ttl') * 480
+                'expires_in' => config('jwt.ttl') * 180
             ]
         ],200);
     }
@@ -111,6 +112,26 @@ class UserController extends Controller
             return response()->json([
                 'errors' => "Erro ao deletar o usuário!",
             ], 422);
+        }
+    }
+
+    public function refresh()
+    {
+        $token = JWTAuth::parseToken()->refresh();
+    
+        if ($token) {
+            return response()->json([
+                'user' => JWTAuth::setToken($token)->toUser(),
+                'Authorization' => [
+                    'token' => $token,
+                    'type' => 'Bearer',
+                    'expires_in' => config('jwt.ttl') * 180
+                ]
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Erro ao atualizar o token!',
+            ], 409);
         }
     }
 
