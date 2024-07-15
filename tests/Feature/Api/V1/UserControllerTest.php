@@ -64,6 +64,34 @@ class UserControllerTest extends TestCase
         ]);
     }
 
+    public function test_refresh_token_successfully()
+    {
+        $user = User::create([
+            'name' => 'Usuário de teste',
+            'email' => 'teste@teste.com',
+            'password' => Hash::make('password'),
+        ]);
+
+        $token = $this->postJson('/api/v1/user/login', [
+            "email" => $user->email,
+            "password" => "password"
+        ]);
+
+        $response = $this->withHeader("Authorization", 'Bearer ' . $token["Authorization"]["token"])
+        ->json('POST', "/api/v1/user/refresh")
+        ->assertOk();
+
+        $response->assertStatus(200)
+        ->assertJsonStructure([
+            'user',
+            'Authorization' => [
+                'token',
+                'type',
+                'expires_in',
+            ],
+        ]);
+    }
+
     public function test_update_user_successfully()
     {
         $user = User::factory()->create();
