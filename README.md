@@ -1,66 +1,81 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# API Liven
+---
+## Descrição
+Desenvolveimento de uma API HTTP com cadastro e controle de usuários, cadastro de endereços e autenticação com JWT.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Tecnologias utilizadas:
+- Framework: Laravel, versão 10
+- Linguagem: PHP, versão 8.2
+- Banco de dados: MySQL, versão 8.0.36
+- Autenticação: JWT
+- Testes automatizados: PHPUnit
+- Collection: Insomnia
 
-## About Laravel
+## Pré-requisitos
+Antes de começar, garanta que você realizou os seguintes requisitos:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+1. Instalação do Composer de https://getcomposer.org/download/
+2. Instalação do Apache (Xampp) para usar o PHP de https://sourceforge.net/projects/xampp/files/
+3. Descomente as seguintes linhas no arquivo php.ini removendo o ponto e vírgula ("`;`"):
+```
+extension=pdo_mysql
+extension=zip
+```
+4. Instale o MySQL (Workbench e Server) e crie um banco para armazenar os dados através do link: https://dev.mysql.com/downloads/workbench/
+   - As credenciais serão usadas no arquivo .env
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Instalação do projeto:
+Para instalar o projeto, siga as seguintes etapas:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+1- Clone o repositório:
+```
+git clone https://github.com/Jonathanmoreiraa/api-liven.git
+```
+2- Navegue até o diretório do projeto e instale as dependências: 
+ ```
+ composer install
+ ```
 
-## Learning Laravel
+## Inicialização do projeto
+1- Renomeie o arquivo ```.env.example``` para ```.env``` e modifique as informações de acordo com seu projeto e banco de dados. Um exemplo com configuração de banco de dados:
+```
+DB_CONNECTION=mysql
+DB_HOST=localhost
+DB_PORT=3006
+DB_DATABASE=liven
+DB_USERNAME=root
+DB_PASSWORD=root
+```
+2- Rode as migrations com o comando:
+```
+php artisan migrate
+```
+3- Gere uma chave para a aplicação:
+```
+php artisan key:generate --ansi
+```
+4- Gere um chave para a verificação e autenticação JWT:
+```
+php artisan jwt:secret
+```
+5- Inicie o servidor:
+```
+php artisan serve --port=8000
+```
+Observação: o comando acima foi utilizado para inicializar o servidor na porta 8000, o projeto foi desenvolvido nesta porta e a utiliza como padrão, caso seja necessário utilizar outra porta o `servers` deve ser editado no `storage/api-docs/swagger.yaml` e `storage/api-docs/swagger.json` para utilizar o swagger.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Para utilizar a API
+O projeto foi criado junto ao swagger `darkaonline/l5-swagger`, sendo assim, pode ser testado através de uma documentação com swagger que pode ser acessada através do link: http://localhost:8000/api/documentation.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Além do swagger, existe um arquivo chamado `collection.json` que pode ser importado no Insomnia para testar em um ambiente para teste de APIs. Para importar, basta seguir os passos da documentação: https://docs.insomnia.rest/insomnia/import-export-data.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Caso a porta esteja diferente de 8000 e seja optado por testar no insomnia, o `Base Environment` deve ser editado conforme o endereço. Junto ao endereço, o token é adicionado no `Base Environment` (o que facilita o teste das outras rotas), as informações devem ficar semelhantes a imagem abaixo:
 
-## Laravel Sponsors
+![image](https://github.com/user-attachments/assets/4b0938b1-6dcd-4b3c-b10e-eb7b29726651)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+## Licença
+Este projeto possui a licença MIT.
 
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Meu linkedin
+Fique à vontade para se conectar comigo no linkedin.
+* LinkedIn: [Jonathan Moreira](https://www.linkedin.com/in/jonathanmoreira1/)
