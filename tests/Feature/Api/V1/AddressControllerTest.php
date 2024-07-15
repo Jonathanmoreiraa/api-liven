@@ -178,6 +178,41 @@ class AddressControllerTest extends TestCase
         ]);
     }
 
+    public function test_delete_address_successfully()
+    {
+        $user = User::create([
+            'name' => 'Name example',
+            'email' => 'example@example.com',
+            'password' => Hash::make('password'),
+        ]);
+
+        $address = Address::create([
+            "street"=> "Rua das Flores",
+            "number"=> "123",
+            "neighborhood"=> "Jardim Primavera",
+            "additional"=> "Apt 45",
+            "city"=> "São Carlos",
+            "state"=> "SP",
+            "country"=> "BR",
+            "postal_code"=> "13560-123",
+            "user_id" => $user->id
+        ]);
+
+        $token = $this->postJson('/api/v1/user/login', [
+            "email" => $user->email,
+            "password" => "password"
+        ]);
+
+        $response = $this->withHeader("Authorization", 'Bearer ' . $token["Authorization"]["token"])
+        ->json('DELETE', "/api/v1/user/address/{$address->id}")
+        ->assertOk();
+
+        $response->assertStatus(200)
+        ->assertJson([
+            'data' => 'Endereço deletado com sucesso!'
+        ]);
+    }
+
     public function test_add_address_validation_error()
     {
         $user = User::create([
@@ -248,6 +283,27 @@ class AddressControllerTest extends TestCase
 
         $response = $this->withHeader("Authorization", 'Bearer ' . $token["Authorization"]["token"])
         ->json('PUT', "/api/v1/user/address/{$address->id}", $updateData)
+        ->assertUnprocessable()
+        ->assertJsonStructure([
+            "errors"
+        ]);
+    }
+
+    public function test_delete_address_with_error()
+    {
+        $user = User::create([
+            'name' => 'Name example',
+            'email' => 'example@example.com',
+            'password' => Hash::make('password'),
+        ]);
+
+        $token = $this->postJson('/api/v1/user/login', [
+            "email" => $user->email,
+            "password" => "password"
+        ]);
+
+        $response = $this->withHeader("Authorization", 'Bearer ' . $token["Authorization"]["token"])
+        ->json('DELETE', "/api/v1/user/address/error")
         ->assertUnprocessable()
         ->assertJsonStructure([
             "errors"

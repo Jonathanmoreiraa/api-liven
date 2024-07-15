@@ -17,4 +17,5 @@ Route::prefix('v1')->group(function () {
     Route::get('/user/address', [AddressController::class, 'getAdresseses']);
     Route::get('/user/address/{id}', [AddressController::class, 'getAdressById']);
     Route::put('/user/address/{id}', [AddressController::class, 'update']);
+    Route::delete('/user/address/{id}', [AddressController::class, 'delete']);
 });

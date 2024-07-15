@@ -179,4 +179,23 @@ class AddressController extends Controller
             'address' => $address
         ], 200);
     }
+
+    public function delete(string $id){
+        try {
+            $user = Auth::user();
+
+            $addressFind = Address::where(["user_id" => $user->id])->findOrFail($id);
+            
+            $address = Address::destroy($id);
+            
+            return response()->json([
+                'data' => "Endereço deletado com sucesso!"
+            ], 200);
+            
+        } catch (\Throwable $th) {
+            return response()->json([
+                'errors' => "Erro ao deletar o endereço!",
+            ], 422);
+        }
+    }
 }
