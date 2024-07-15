@@ -181,11 +181,16 @@ class AddressController extends Controller
     }
 
     public function delete(string $id){
-        try {
-            $user = Auth::user();
+        $user = Auth::user();
+        $addressFind = Address::where(["user_id" => $user->id])->find($id);
 
-            $addressFind = Address::where(["user_id" => $user->id])->findOrFail($id);
-            
+        if (!$addressFind) {
+            return response()->json([
+                'errors' => "Nenhum endereço encontrado com esse id!",
+            ], 422);
+        }
+
+        try {
             $address = Address::destroy($id);
             
             return response()->json([
