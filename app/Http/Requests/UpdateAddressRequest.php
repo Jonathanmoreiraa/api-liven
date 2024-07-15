@@ -6,29 +6,27 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class AddAddressRequest extends FormRequest
+class UpdateAddressRequest extends FormRequest
 {
     public function rules(): array
     {
         return [
-            "street" => "required|min:1|max:255",
-            "number" => "required|min:1|max:255",
-            "neighborhood" => "required|min:1|max:255",
-            "additional" => "nullable|max:255",
-            "city" => "required|min:1|max:255",
-            "state" => "required|min:1|max:2",
-            "country" => "required|min:1|max:2",
-            "postal_code" => "required|min:1|max:50"
+            "street" => "min:1|max:255",
+            "number" => "min:1|max:255",
+            "neighborhood" => "min:1|max:255",
+            "additional" => "max:255",
+            "city" => "min:1|max:255",
+            "state" => "min:1|max:2",
+            "country" => "min:1|max:2",
+            "postal_code" => "min:1|max:50"
         ];
     }
 
     public function messages(): array
     {
         return [
-            'required' => 'O campo :attribute é obrigatório.',
             'max' => "O campo :attribute excede a quantidade máxima de :max caracteres.",
             "min" => "O campo :attribute não pode estar vazio."
-
         ];
     }
 

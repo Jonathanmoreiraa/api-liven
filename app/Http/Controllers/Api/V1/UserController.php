@@ -55,7 +55,7 @@ class UserController extends Controller
             'Authorization' => [
                 'token' => $token,
                 'type' => 'Bearer',
-                'expires_in' => config('jwt.ttl') * 60
+                'expires_in' => config('jwt.ttl') * 480
             ]
         ],200);
     }

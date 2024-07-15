@@ -121,6 +121,63 @@ class AddressControllerTest extends TestCase
         ]);
     }
 
+    public function test_update_address_successfully()
+    {
+        $user = User::create([
+            'name' => 'Name example',
+            'email' => 'example@example.com',
+            'password' => Hash::make('password'),
+        ]);
+
+        $address = Address::create([
+            "street"=> "Rua das Flores",
+            "number"=> "123",
+            "neighborhood"=> "Jardim Primavera",
+            "additional"=> "Apt 45",
+            "city"=> "São Carlos",
+            "state"=> "SP",
+            "country"=> "BR",
+            "postal_code"=> "13560-123",
+            "user_id" => $user->id
+        ]);
+
+        $token = $this->postJson('/api/v1/user/login', [
+            "email" => $user->email,
+            "password" => "password"
+        ]);
+
+        $updateData = [
+            "street"=> "Rua Vicente Tamarozzi",
+            "number"=> "1230",
+            "neighborhood"=> "Quinta da Bela Olinda",
+            "additional"=> "",
+            "city"=> "Bauru",
+            "state"=> "SP",
+            "country"=> "BR",
+            "postal_code"=> "17023-850"
+        ];
+
+        $response = $this->withHeader("Authorization", 'Bearer ' . $token["Authorization"]["token"])
+        ->json('PUT', "/api/v1/user/address/{$address->id}", $updateData)
+        ->assertOk();
+
+        $response->assertStatus(200)
+        ->assertJson([
+            'message' => 'Endereço editado com sucesso!',
+            'address' => [
+                'id' => $address->id,
+                "street"=> "Rua Vicente Tamarozzi",
+                "number"=> "1230",
+                "neighborhood"=> "Quinta da Bela Olinda",
+                "additional"=> "",
+                "city"=> "Bauru",
+                "state"=> "SP",
+                "country"=> "BR",
+                "postal_code"=> "17023-850"
+            ],
+        ]);
+    }
+
     public function test_add_address_validation_error()
     {
         $user = User::create([
@@ -147,6 +204,50 @@ class AddressControllerTest extends TestCase
 
         $response = $this->withHeader("Authorization", 'Bearer ' . $token["Authorization"]["token"])
         ->json('POST', "/api/v1/user/address", $data)
+        ->assertUnprocessable()
+        ->assertJsonStructure([
+            "errors"
+        ]);
+    }
+
+    public function test_update_address_validation_error()
+    {
+        $user = User::create([
+            'name' => 'Name example',
+            'email' => 'example@example.com',
+            'password' => Hash::make('password'),
+        ]);
+
+        $address = Address::create([
+            "street"=> "Rua das Flores",
+            "number"=> "123",
+            "neighborhood"=> "Jardim Primavera",
+            "additional"=> "Apt 45",
+            "city"=> "São Carlos",
+            "state"=> "SP",
+            "country"=> "BR",
+            "postal_code"=> "13560-123",
+            "user_id" => $user->id
+        ]);
+
+        $token = $this->postJson('/api/v1/user/login', [
+            "email" => $user->email,
+            "password" => "password"
+        ]);
+
+        $updateData = [
+            "street"=> "",
+            "number"=> "",
+            "neighborhood"=> "",
+            "additional"=> "",
+            "city"=> "",
+            "state"=> "",
+            "country"=> "",
+            "postal_code"=> ""
+        ];
+
+        $response = $this->withHeader("Authorization", 'Bearer ' . $token["Authorization"]["token"])
+        ->json('PUT', "/api/v1/user/address/{$address->id}", $updateData)
         ->assertUnprocessable()
         ->assertJsonStructure([
             "errors"

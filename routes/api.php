@@ -16,4 +16,5 @@ Route::prefix('v1')->group(function () {
     Route::post('/user/address', [AddressController::class, 'add']);
     Route::get('/user/address', [AddressController::class, 'getAdresseses']);
     Route::get('/user/address/{id}', [AddressController::class, 'getAdressById']);
+    Route::put('/user/address/{id}', [AddressController::class, 'update']);
 });

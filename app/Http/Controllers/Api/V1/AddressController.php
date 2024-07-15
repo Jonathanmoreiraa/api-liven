@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddAddressRequest;
+use App\Http\Requests\UpdateAddressRequest;
 use App\Models\Address;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -131,6 +132,51 @@ class AddressController extends Controller
 
         return response()->json([
             'data' => $address
+        ], 200);
+    }
+
+    public function update(UpdateAddressRequest $request, string $id)
+    {
+        $user = Auth::user();
+
+        $address = Address::where([
+            'id' => $id,
+            "user_id" => $user->id
+        ])->find($id);
+
+        if (!$address) {
+            return response()->json([
+                'errors' => "Erro ao encontrar endereço com esse id!",
+            ], 422);
+        }
+
+        try {
+            $requestUpdate = $request->only([
+                "street", 
+                "number", 
+                "neighborhood", 
+                "additional", 
+                "city",
+                "state",
+                "country",
+                "postal_code"
+            ]);
+
+            Address::where([
+                'id' => $id,
+                "user_id" => $user->id
+            ])->update($requestUpdate);
+
+            $address = Address::find($id);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'errors' => "Erro ao editar o endereço!",
+            ], 422);
+        }
+        
+        return response()->json([
+            'message' => 'Endereço editado com sucesso!',
+            'address' => $address
         ], 200);
     }
 }
